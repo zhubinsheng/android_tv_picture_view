@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">tvPic</string>
+    <string name="browse_title">Videos by Your Company</string>
+    <string name="related_movies">Related Videos</string>
+    <string name="grid_view">Grid View</string>
+    <string name="error_fragment">Error Fragment</string>
+    <string name="personal_settings">Personal Settings</string>
+    <string name="watch_trailer_1">Watch trailer</string>
+    <string name="watch_trailer_2">FREE</string>
+    <string name="rent_1">Rent By Day</string>
+    <string name="rent_2">From $1.99</string>
+    <string name="buy_1">Buy and Own</string>
+    <string name="buy_2">AT $9.99</string>
+    <string name="movie">Movie</string>
+
+    <!-- Error messages -->
+    <string name="error_fragment_message">An error occurred</string>
+    <string name="dismiss_error">Dismiss</string>
+    <string name="httpjpg">http://123.57.131.113:8080/group1/default/20210924/14/16/2/210923%E6%BA%90%E9%A6%99%E5%B1%B1%E7%A7%80%E6%B2%BF%E8%B7%AF42%E5%AF%B8%E7%94%B5%E8%A7%86%E5%B1%8F1.jpg</string>
+</resources>
