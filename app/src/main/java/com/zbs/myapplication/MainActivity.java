@@ -3,6 +3,7 @@ package com.zbs.myapplication;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -12,10 +13,17 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -84,33 +92,48 @@ public class MainActivity extends Activity {
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.mipmap.ic_launcher)
                 .error(R.drawable.movie)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        Log.d(TAG,"网络访问失败，请检查是否开始网络或者增加http的访问许可");
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        Log.d(TAG,"网络访问成功，可以显示图片");
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                super.run();
+                                try {
+                                    Thread.sleep(1_000);
+                                    File file = Glide.with(MainActivity.this).downloadOnly().load(picUrl).submit().get();
+
+                                    String galleryPath = Environment.getExternalStorageDirectory()
+                                            + File.separator + "DCIM"
+                                            + File.separator +  file.getName() + ".jpg"
+                                            ;
+
+                                    Log.d(TAG, "galleryPath: " + galleryPath);
+                                    Log.d(TAG, "file: " + file.getName());
+                                    Log.d(TAG, "file: " + file.getPath());
+                                    Log.d(TAG, "file: " + file.getAbsolutePath());
+                                    copy(file, new File(galleryPath));
+
+                                    SPUtil.putString(MainActivity.this, "file", "picture", file.getPath());
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                        }.start();
+                        return false;
+                    }
+                })
+
                 .into((ImageView) findViewById(R.id.imageView));
 
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                try {
-                    Thread.sleep(10_000);
-                    File file = Glide.with(MainActivity.this).downloadOnly().load(picUrl).submit().get();
 
-                    String galleryPath = Environment.getExternalStorageDirectory()
-                            + File.separator + "DCIM"
-                            + File.separator +  file.getName() + ".jpg"
-                            ;
-
-                    Log.d(TAG, "galleryPath: " + galleryPath);
-                    Log.d(TAG, "file: " + file.getName());
-                    Log.d(TAG, "file: " + file.getPath());
-                    Log.d(TAG, "file: " + file.getAbsolutePath());
-                    copy(file, new File(galleryPath));
-
-                    SPUtil.putString(MainActivity.this, "file", "picture", file.getPath());
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }.start();
     }
 
     /**
